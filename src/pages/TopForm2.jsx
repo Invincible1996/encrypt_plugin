@@ -1,20 +1,63 @@
-import {useState} from 'react';
-import {Button, Form, Input, message, Select} from 'antd';
-import secret from "@/pages/secret";
+/**
+ *
+ *
+ * @returns {JSX.Element}
+ */
+import {Button, Form, Input, message, Select} from "antd";
+import {useState} from "react";
+import secret from "./secret";
 
 const CryptoJS = require("crypto-js")
 
 export default function () {
+
+
+  const models = {
+    'ECB': CryptoJS.mode.ECB,
+    'CBC': CryptoJS.mode.CBC,
+    'CTR': CryptoJS.mode.CTR,
+    'CFB': CryptoJS.mode.CFB,
+    'OFB': CryptoJS.mode.OFB,
+  }
+
+  const paddingTypes = {
+    "zeropadding": CryptoJS.pad.ZeroPadding,
+    "pkcs5padding": CryptoJS.pad.Pkcs5,
+    "pkcs7padding": CryptoJS.pad.Pkcs7,
+    "iso10126": CryptoJS.pad.Iso10126,
+    "ansix923": CryptoJS.pad.AnsiX923,
+    "nopadding": CryptoJS.pad.NoPadding,
+  }
+
+  const dataModules = ['128', '192', '256'];
+
+  const outputs = ['base64', 'hex'];
+
+  const chartList = ['gb2312', 'gbk', 'gb19030', 'utf8', 'iso8859-1'];
+
   const [form] = Form.useForm();
   const [inputText, setText] = useState('');
   const [outputValue, setOutputValue] = useState('')
+
+
+  // const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF"); //十六位十六进制数作为秘钥
+  // const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412'); //十六位十六进制数作为秘钥偏移量
+
   /**
    *
-   * AES 加密
+   * @param e
    */
-  const encrypt = (type: number) => {
+  function onChange(e) {
+    setText(e.target.value)
+  }
+
+  /**
+   *
+   *
+   * @param type
+   */
+  function encrypt(type) {
     console.log(form.getFieldsValue());
-    // console.log(inputText);
     const formData = form.getFieldsValue();
     if (!formData.password) {
       message.error('密码必填')
@@ -27,72 +70,19 @@ export default function () {
     const offset = formData.offset; // 偏移量
     const padding = formData.fillContent // 填充
 
-    const iv = CryptoJS.enc.Utf8.parse(offset); //十六位十六进制数作为秘钥偏移量
     const key = CryptoJS.enc.Utf8.parse(password); //十六位十六进制数作为秘钥
-    // const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF"); //十六位十六进制数作为秘钥
-    // const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412'); //十六位十六进制数作为秘钥偏移量
+    const iv = CryptoJS.enc.Utf8.parse(offset); //十六位十六进制数作为秘钥偏移量
 
 
     if (type === 0) {
-      let message = secret.Encrypt(inputText, key, iv,models[model].value,paddingTypeList)
+      let message = secret.Encrypt(inputText, key, iv, models[model], paddingTypes[padding])
       setOutputValue(message)
     } else {
-      let message = secret.Decrypt(inputText, key, iv, models[model].value,paddingTypeList)
+      let message = secret.Decrypt(inputText, key, iv, models[model], paddingTypes[padding])
       setOutputValue(message)
     }
 
-  };
-
-
-  /**
-   *
-   *
-   */
-  interface Model {
-    name: string
-    value: object
   }
-
-  interface PaddingType {
-    name: string
-    value: object
-  }
-
-  const paddingTypeList: Array<PaddingType> = [
-    {name: 'zeropadding', value: CryptoJS.pad.ZeroPadding},
-    {name: 'pkcs5padding', value: CryptoJS.pad.Pkcs5},
-    {name: 'pkcs7padding', value: CryptoJS.pad.Pkcs7},
-    {name: 'iso10126', value: CryptoJS.pad.Iso10126},
-    {name: 'ansix923', value: CryptoJS.pad.AnsiX923},
-    {name: 'nopadding', value: CryptoJS.pad.NoPadding}
-  ]
-
-  const models: Array<Model> = [
-    {name: 'ECB', value: CryptoJS.mode.ECB},
-    {name: 'CBC', value: CryptoJS.mode.CBC},
-    {name: 'CTR', value: CryptoJS.mode.CTR},
-    {name: 'CFB', value: CryptoJS.mode.CFB},
-    {name: 'OFB', value: CryptoJS.mode.OFB},
-  ];
-
-  const dataModules = ['128', '192', '256'];
-
-  const outputs = ['base64', 'hex'];
-
-  const chartList = ['gb2312', 'gbk', 'gb19030', 'utf8', 'iso8859-1'];
-
-
-  /**
-   *
-   *
-   * @param e
-   */
-  const onChange = (e: any) => {
-    setText(e.target.value);
-  };
-
-  console.log(typeof CryptoJS.pad.ZeroPadding)
-  console.log(typeof CryptoJS.mode.ECB)
 
   return (
     <div>
@@ -104,8 +94,8 @@ export default function () {
           //   onFinish={onFinish}
           layout="inline"
           initialValues={{
-            model: 0,
-            padding: 0,
+            model: 'ECB',
+            padding: 'zeropadding',
             dataModule: '256',
             output: 'hex',
             password: '',
@@ -115,18 +105,18 @@ export default function () {
         >
           <Form.Item label="AES加密模式：" name="model">
             <Select style={{width: 100}}>
-              {models.map((item, index) =>
-                <Select.Option key={item.name} value={index}>
-                  {item.name}
+              {Object.keys(models).map((item, index) =>
+                <Select.Option key={item} value={item}>
+                  {item}
                 </Select.Option>
               )}
             </Select>
           </Form.Item>
           <Form.Item label="填充：" name="padding">
             <Select style={{width: 140}}>
-              {paddingTypeList.map((item, index) => (
-                <Select.Option key={item.name} value={index}>
-                  {item.name}
+              {Object.keys(paddingTypes).map((item, index) => (
+                <Select.Option key={item} value={item}>
+                  {item}
                 </Select.Option>
               ))}
             </Select>
