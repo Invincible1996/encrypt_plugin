@@ -1,16 +1,25 @@
 const CryptoJS = require('crypto-js');  //引用AES源码js
 
 
-//解密方法
-function Decrypt(word: string, key: string, iv: string, model: object, padding: object) {
-  console.log(model)
+/**
+ *
+ * @param word
+ * @param key
+ * @param iv
+ * @param mode
+ * @param padding
+ * @constructor
+ */
+function Decrypt(word: string, key: string, iv: string, mode: object, padding: object) {
+  console.log(mode)
   let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
   let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
   let decrypt = CryptoJS.AES.decrypt(srcs,
     key,
     {
       iv: iv,
-      mode: model,
+      mode: mode,
+      // mode: CryptoJS.mode.CBC,
       // padding: padding
       padding: CryptoJS.pad.Pkcs7
     });
@@ -18,15 +27,25 @@ function Decrypt(word: string, key: string, iv: string, model: object, padding: 
   return decryptedStr.toString();
 }
 
-//加密方法
-function Encrypt(word: string, key: string, iv: string, model: object, padding: object) {
-  console.log(model)
+/**
+ *
+ * @param word
+ * @param key
+ * @param iv
+ * @param mode
+ * @param padding
+ * @constructor
+ */
+function Encrypt(word: string, key: string, iv: string, mode: object, padding: object) {
+  console.log(mode)
   let srcs = CryptoJS.enc.Utf8.parse(word);
   let encrypted = CryptoJS.AES.encrypt(srcs,
     key,
     {
       iv: iv,
-      mode: model,
+      mode: mode,
+      // mode: CryptoJS.mode.CBC,
+      // padding:padding,
       // padding: padding
       padding: CryptoJS.pad.Pkcs7
     });

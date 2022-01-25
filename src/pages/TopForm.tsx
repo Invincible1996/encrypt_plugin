@@ -29,8 +29,8 @@ export default function () {
 
     const iv = CryptoJS.enc.Utf8.parse(offset); //十六位十六进制数作为秘钥偏移量
     const key = CryptoJS.enc.Utf8.parse(password); //十六位十六进制数作为秘钥
-    // const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF"); //十六位十六进制数作为秘钥
-    // const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412'); //十六位十六进制数作为秘钥偏移量
+    // const key = CryptoJS.enc.Utf8.parse("keykeykeykeykeyk"); //十六位十六进制数作为秘钥
+    // const iv = CryptoJS.enc.Utf8.parse('1234567887654321'); //十六位十六进制数作为秘钥偏移量
 
 
     if (type === 0) {

@@ -12,7 +12,7 @@ const CryptoJS = require("crypto-js")
 export default function () {
 
 
-  const models = {
+  const modes = {
     'ECB': CryptoJS.mode.ECB,
     'CBC': CryptoJS.mode.CBC,
     'CTR': CryptoJS.mode.CTR,
@@ -43,6 +43,9 @@ export default function () {
   // const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF"); //十六位十六进制数作为秘钥
   // const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412'); //十六位十六进制数作为秘钥偏移量
 
+  const key = CryptoJS.enc.Utf8.parse("keykeykeykeykeyk"); //十六位十六进制数作为秘钥
+  const iv = CryptoJS.enc.Utf8.parse('1234567887654321');
+
   /**
    *
    * @param e
@@ -70,15 +73,25 @@ export default function () {
     const offset = formData.offset; // 偏移量
     const padding = formData.fillContent // 填充
 
-    const key = CryptoJS.enc.Utf8.parse(password); //十六位十六进制数作为秘钥
-    const iv = CryptoJS.enc.Utf8.parse(offset); //十六位十六进制数作为秘钥偏移量
+    // const key = CryptoJS.enc.Utf8.parse("keykeykeykeykeyk"); //十六位十六进制数作为秘钥
+    // const iv = CryptoJS.enc.Utf8.parse('1234567887654321'); //十六位十六进制数作为秘钥偏移量
+    // const key = CryptoJS.enc.Utf8.parse(password); //十六位十六进制数作为秘钥
+    // const iv = CryptoJS.enc.Utf8.parse(offset); //十六位十六进制数作为秘钥偏移量
 
 
     if (type === 0) {
-      let message = secret.Encrypt(inputText, key, iv, models[model], paddingTypes[padding])
-      setOutputValue(message)
+      let message = secret.Encrypt(inputText, key, iv, modes[model], paddingTypes[padding])
+      if (output === 'base64') {
+        let oldHexStr = CryptoJS.enc.Hex.parse(message);
+        // 将密文转为Base64的字符串
+        var base64Str = CryptoJS.enc.Base64.stringify(oldHexStr);
+        console.log('base64Str->' + base64Str);
+        setOutputValue(base64Str)
+      } else {
+        setOutputValue(message)
+      }
     } else {
-      let message = secret.Decrypt(inputText, key, iv, models[model], paddingTypes[padding])
+      let message = secret.Decrypt(inputText, key, iv, modes[model], paddingTypes[padding])
       setOutputValue(message)
     }
 
@@ -94,18 +107,18 @@ export default function () {
           //   onFinish={onFinish}
           layout="inline"
           initialValues={{
-            model: 'ECB',
-            padding: 'zeropadding',
+            model: 'CBC',
+            padding: 'pkcs7padding',
             dataModule: '256',
             output: 'hex',
-            password: '',
+            password: "",
             offset: '',
             charset: 'utf8',
           }}
         >
           <Form.Item label="AES加密模式：" name="model">
             <Select style={{width: 100}}>
-              {Object.keys(models).map((item, index) =>
+              {Object.keys(modes).map((item, index) =>
                 <Select.Option key={item} value={item}>
                   {item}
                 </Select.Option>
