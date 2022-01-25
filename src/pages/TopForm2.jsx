@@ -71,7 +71,7 @@ export default function () {
     const output = formData.output;   // 输出 base64 or hex
     const charset = formData.charset; // 字符集
     const offset = formData.offset; // 偏移量
-    const padding = formData.fillContent // 填充
+    const padding = formData.padding // 填充
 
     // const key = CryptoJS.enc.Utf8.parse("keykeykeykeykeyk"); //十六位十六进制数作为秘钥
     // const iv = CryptoJS.enc.Utf8.parse('1234567887654321'); //十六位十六进制数作为秘钥偏移量
