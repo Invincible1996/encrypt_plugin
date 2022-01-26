@@ -27,6 +27,8 @@ export default function () {
     nopadding: CryptoJS.pad.NoPadding,
   };
 
+  console.log(paddingTypes['zeropadding'])
+
   const dataModules = ['128', '192', '256'];
 
   const outputs = ['base64', 'hex'];
